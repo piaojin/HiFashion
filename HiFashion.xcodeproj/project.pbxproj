@@ -399,7 +399,7 @@
 				TargetAttributes = {
 					18CD678E1B56664C003EC48C = {
 						CreatedOnToolsVersion = 6.3.1;
-						DevelopmentTeam = K882SLJN5W;
+						DevelopmentTeam = 53R24255NY;
 					};
 					18CD67A71B56664C003EC48C = {
 						CreatedOnToolsVersion = 6.3.1;
@@ -651,7 +651,7 @@
 				INFOPLIST_FILE = HiFashion/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = cn.piaojin.hifashion;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.rspread.hifashion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos9.0;
@@ -674,7 +674,7 @@
 				INFOPLIST_FILE = HiFashion/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = cn.piaojin.hifashion;
+				PRODUCT_BUNDLE_IDENTIFIER = cn.rspread.hifashion;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SDKROOT = iphoneos9.0;

@@ -94,7 +94,7 @@
 - (void)initWebview
 { //http://192.168.2.209:8081
 
-    [self.homeWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:HOMEBASEURL]]];
+    [self.homeWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:HOMEBASEURL]cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:16.0]];
     self.homeWebview.delegate = self;
     // [self initGas];
     self.homeWebview.opaque = NO;

@@ -28,6 +28,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+//    [self.view setTranslatesAutoresizingMaskIntoConstraints:NO];
     [self initNotification];
     [self initWebview];
     [self initNav];
@@ -49,8 +50,10 @@
 }
 - (void)initWebview{
     
-    
-    [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+//    [_showNavWebView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    _showNavWebView.scalesPageToFit=YES;
+    [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:16.0]];
+//    [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
     _showNavWebView.delegate=self;
     _showNavWebView.opaque=NO;
     UIScrollView *scollview=(UIScrollView *)[[_showNavWebView subviews]objectAtIndex:0];
@@ -64,7 +67,6 @@
 
 - (void)goBack{
     if (_showNavWebView.canGoBack) {
-//        [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
         NSRange range=[self.tempurl rangeOfString:TAOBAOLOGIN];
         /**
          *  淘宝链接如果包含登陆重定向则会一直跳转到登陆页面，所以要连续返回两次才能不被重定向到淘宝登陆页面
@@ -89,6 +91,13 @@
 }
 
 - (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+//    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+//    hud.removeFromSuperViewOnHide =YES;
+//    hud.mode = MBProgressHUDModeIndeterminate;
+//    hud.labelText =@"加载数据失败";
+//    hud.minSize = CGSizeMake(132.f, 108.0f);
+//    [hud hide:YES afterDelay:1];
+
     [MBProgressHUD hideHUDForView:self.view animated:YES];
     
 }
@@ -134,12 +143,15 @@
         
         self.ShowNavHintLabel.hidden = YES;
         _showNavWebView.hidden = NO;
-        [self.showNavWebView reload];
+        _showNavWebView.scalesPageToFit=YES;
+        [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+//        [self.showNavWebView reload];
     }
     
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"2"]) { //Wifi
         self.ShowNavHintLabel.hidden = YES;
         _showNavWebView.hidden = NO;
+        _showNavWebView.scalesPageToFit=YES;
         [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
         //[self.homeWebview reload];
     }

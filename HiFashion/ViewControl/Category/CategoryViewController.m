@@ -90,8 +90,8 @@
 
 - (void)initWebview{//http://192.168.2.209:8081
     
-    
-    [self.mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:CATEGORYBASEURL]]];
+//    [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:16.0]];
+    [self.mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:CATEGORYBASEURL] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:16.0]];
     self.mainWebView.delegate=self;
     // [self initGas];
     self.mainWebView.opaque=NO;
