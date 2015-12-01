@@ -6,6 +6,8 @@
 //  Copyright (c) 2015年 Reasonable. All rights reserved.
 //
 
+#import "Tool.h"
+#import "PJNetWorkHelper.h"
 #import "MeViewController.h"
 #import "MBProgressHUD.h"
 #import "BaseHead.h"
@@ -13,6 +15,7 @@
 #import "ShowNavViewController.h"
 
 @interface MeViewController ()
+@property(nonatomic,assign)BOOL isFirstLoadSuc;
 /**
  *  UIWebView第一次如果没有网络，加载会失败，则reload方法会无效，即使后面网络可以了reload还是无效
  */
@@ -43,6 +46,7 @@
 #pragma mark - webview
 - (void)webViewDidFinishLoad:(UIWebView*)webView
 {
+    self.isFirstLoadSuc=true;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
@@ -66,7 +70,13 @@
 
 - (BOOL)webView:(UIWebView*)webView shouldStartLoadWithRequest:(NSURLRequest*)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    return true;
+    if([PJNetWorkHelper isNetWorkAvailable]){
+        return true;
+    }else{
+        
+        [Tool show:@"网络不可用" InView:self.view];
+        return false;
+    }
 }
 
 - (void)initWebview
@@ -101,21 +111,33 @@
         hud.labelText = @"网络不可用";
         hud.minSize = CGSizeMake(132.f, 108.0f);
         [hud hide:YES afterDelay:1];
-        self.MeHintLabel.hidden = NO;
-        _MeWebView.hidden = YES;
+        if(!self.isFirstLoadSuc){
+            
+            self.MeHintLabel.hidden = NO;
+            _MeWebView.hidden = YES;
+        }else{
+            
+            [Tool show:@"网络不可用" InView:self.view];
+        }
     }
 
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"1"]) { // 有移动网络
 
         self.MeHintLabel.hidden = YES;
         _MeWebView.hidden = NO;
-        [self.MeWebView reload];
+        if(!self.isFirstLoadSuc){
+            
+            [self.MeWebView reload];
+        }
     }
 
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"2"]) { //Wifi
         self.MeHintLabel.hidden = YES;
         _MeWebView.hidden = NO;
-        [self.MeWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:MEBASEURL]]];
+        if(!self.isFirstLoadSuc){
+            
+            [self.MeWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:MEBASEURL]]];
+        }
     }
 }
 

@@ -6,6 +6,8 @@
 //  Copyright (c) 2015年 Reasonable. All rights reserved.
 //
 
+#import "Tool.h"
+#import "PJNetWorkHelper.h"
 #import "CategoryViewController.h"
 #import "MBProgressHUD.h"
 #import "BaseHead.h"
@@ -14,6 +16,8 @@
 #import "ShowNavViewController.h"
 
 @interface CategoryViewController ()
+//第一次是否加载成功
+@property(nonatomic,assign)BOOL isFirstLoadSuc;
 @property (weak, nonatomic) IBOutlet UIWebView *mainWebView;
 @property (weak, nonatomic) IBOutlet UILabel *CategoryHintLabel;
 @end
@@ -39,6 +43,7 @@
 
 #pragma mark - webview
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    self.isFirstLoadSuc=true;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
@@ -67,23 +72,28 @@
     
     if (UIWebViewNavigationTypeLinkClicked==navigationType) {
         
-        NSLog(@"%@--",urlstr);
-        if (!([urlstr rangeOfString:CATEGORYBASEURL].length>0)) {
+        if([PJNetWorkHelper isNetWorkAvailable]){
+            if (!([urlstr rangeOfString:CATEGORYBASEURL].length>0)) {
+                
+                
+                UIStoryboard *story      = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
+                ShowNavViewController *showNavVC = [story instantiateViewControllerWithIdentifier:@"CT"];
+                showNavVC.baseurl=urlstr;
+                self.navigationController.navigationBarHidden=NO;
+                showNavVC.hidesBottomBarWhenPushed=YES;
+                
+                UIBarButtonItem *backItem = [[UIBarButtonItem alloc] init];
+                backItem.title =@"返回";
+                self.navigationItem.backBarButtonItem = backItem;
+                
+                [self.navigationController pushViewController:showNavVC animated:YES];
+                return false;
+            }
+        }else{
             
-            
-            UIStoryboard *story      = [UIStoryboard storyboardWithName:@"Main" bundle:[NSBundle mainBundle]];
-            ShowNavViewController *showNavVC = [story instantiateViewControllerWithIdentifier:@"CT"];
-            showNavVC.baseurl=urlstr;
-            self.navigationController.navigationBarHidden=NO;
-            showNavVC.hidesBottomBarWhenPushed=YES;
-            
-            UIBarButtonItem *backItem = [[UIBarButtonItem alloc] init];
-            backItem.title =@"返回";
-            self.navigationItem.backBarButtonItem = backItem;
-            
-            [self.navigationController pushViewController:showNavVC animated:YES];
-            return false;
+            [Tool show:@"网络不可用" InView:self.view];
         }
+        NSLog(@"%@--",urlstr);
     }
     return true;
 }
@@ -117,20 +127,32 @@
         hud.labelText =@"网络不可用";
         hud.minSize = CGSizeMake(132.f, 108.0f);
         [hud hide:YES afterDelay:1];
-        self.CategoryHintLabel.hidden=NO;
-         _mainWebView.hidden=YES;
+        if(!self.isFirstLoadSuc){
+            
+            self.CategoryHintLabel.hidden=NO;
+            _mainWebView.hidden=YES;
+        }else{
+            
+            [Tool show:@"网络不可用" InView:self.view];
+        }
     }
     
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"1"]) {// 有移动网络
         self.CategoryHintLabel.hidden=YES;
         _mainWebView.hidden=NO;
-        [self.mainWebView reload];
+        if(!self.isFirstLoadSuc){
+            
+            [self.mainWebView reload];
+        }
     }
     
     if([[dict objectForKey:@"NetType"] isEqualToString:@"2"]){//Wifi
         self.CategoryHintLabel.hidden=YES;
         _mainWebView.hidden=NO;
-        [self.mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:CATEGORYBASEURL]]];
+        if(!self.isFirstLoadSuc){
+            
+            [self.mainWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:CATEGORYBASEURL]]];
+        }
         //[self.mainWebView reload];
         
     }

@@ -6,6 +6,8 @@
 //  Copyright (c) 2015年 Reasonable. All rights reserved.
 //
 
+#import "Tool.h"
+#import "PJNetWorkHelper.h"
 #import "BaseHead.h"
 #import "ShowNavViewController.h"
 #import "MBProgressHUD.h"
@@ -17,6 +19,7 @@
     NSString * _baseurl;
 
 }
+@property(nonatomic,assign)BOOL isFirstLoadSuc;
 @property(nonatomic,copy)NSString *tempurl;
 @property (strong, nonatomic) IBOutlet UIWebView *showNavWebView;
 @property (weak, nonatomic) IBOutlet UILabel *ShowNavHintLabel;
@@ -62,6 +65,12 @@
 
 -(BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
     self.tempurl=request.URL.absoluteString;
+    if([PJNetWorkHelper isNetWorkAvailable]){
+
+    }else{
+        
+        [Tool show:@"网络不可用" InView:self.view];
+    }
     return true;
 }
 
@@ -86,6 +95,7 @@
 
 #pragma mark - webview
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
+    self.isFirstLoadSuc=true;
     self.navigationItem.title=[_showNavWebView stringByEvaluatingJavaScriptFromString:@"document.title"];
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
@@ -135,8 +145,14 @@
         hud.labelText = @"网络不可用";
         hud.minSize = CGSizeMake(132.f, 108.0f);
         [hud hide:YES afterDelay:1];
-        self.ShowNavHintLabel.hidden = NO;
-        _showNavWebView.hidden = YES;
+        if(!self.isFirstLoadSuc){
+            
+            self.ShowNavHintLabel.hidden = NO;
+            _showNavWebView.hidden = YES;
+        }else{
+            
+            [Tool show:@"网络不可用" InView:self.view];
+        }
     }
     
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"1"]) { // 有移动网络
@@ -144,7 +160,10 @@
         self.ShowNavHintLabel.hidden = YES;
         _showNavWebView.hidden = NO;
         _showNavWebView.scalesPageToFit=YES;
-        [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+        if(!self.isFirstLoadSuc){
+            
+            [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+        }
 //        [self.showNavWebView reload];
     }
     
@@ -152,7 +171,10 @@
         self.ShowNavHintLabel.hidden = YES;
         _showNavWebView.hidden = NO;
         _showNavWebView.scalesPageToFit=YES;
-        [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+        if(!self.isFirstLoadSuc){
+            
+            [_showNavWebView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_baseurl]]];
+        }
         //[self.homeWebview reload];
     }
 }

@@ -6,6 +6,10 @@
 //  Copyright (c) 2015年 Reasonable. All rights reserved.
 //
 
+
+
+#import "Tool.h"
+#import "PJNetWorkHelper.h"
 #import "HomeViewController.h"
 #import "MBProgressHUD.h"
 #import "BaseHead.h"
@@ -17,6 +21,10 @@
 
     UIWebView* _homeWebview;
 }
+
+//第一次是否加载成功
+@property(nonatomic,assign)BOOL isFirstLoadSuc;
+
 @property (weak, nonatomic) IBOutlet UILabel* HomeHintLabel;
 @end
 
@@ -43,6 +51,7 @@
 #pragma mark - webview
 - (void)webViewDidFinishLoad:(UIWebView*)webView
 {
+    self.isFirstLoadSuc=true;
     [MBProgressHUD hideHUDForView:self.view animated:YES];
 }
 
@@ -71,6 +80,8 @@
 
     if (UIWebViewNavigationTypeLinkClicked == navigationType) {
         
+        if([PJNetWorkHelper isNetWorkAvailable]){
+            
             NSLog(@"%@--", urlstr);
             if (!([urlstr rangeOfString:HOMEBASEURL].length > 0)) {
                 
@@ -84,9 +95,12 @@
                 backItem.title = @"返回";
                 self.navigationItem.backBarButtonItem = backItem;
                 
-                [self.navigationController pushViewController:showNavVC animated:YES];
-                return false;
+                [self.navigationController pushViewController:showNavVC animated:YES];                return false;
             }
+        }else{
+            
+            [Tool show:@"网络不可用" InView:self.view];
+        }
     }
     return true;
 }
@@ -123,21 +137,33 @@
         hud.labelText = @"网络不可用";
         hud.minSize = CGSizeMake(132.f, 108.0f);
         [hud hide:YES afterDelay:1];
-        self.HomeHintLabel.hidden = NO;
-        _homeWebview.hidden = YES;
+        if(!self.isFirstLoadSuc){
+            
+            self.HomeHintLabel.hidden = NO;
+            _homeWebview.hidden = YES;
+        }else{
+            
+            [Tool show:@"网络不可用" InView:self.view];
+        }
     }
 
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"1"]) { // 有移动网络
 
         self.HomeHintLabel.hidden = YES;
         _homeWebview.hidden = NO;
-        [self.homeWebview reload];
+        if(!self.isFirstLoadSuc){
+            
+            [self.homeWebview reload];
+        }
     }
 
     if ([[dict objectForKey:@"NetType"] isEqualToString:@"2"]) { //Wifi
         self.HomeHintLabel.hidden = YES;
         _homeWebview.hidden = NO;
-        [self.homeWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:HOMEBASEURL]]];
+        if(!self.isFirstLoadSuc){
+            
+         [self.homeWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:HOMEBASEURL]]];
+        }
         //[self.homeWebview reload];
     }
 }
